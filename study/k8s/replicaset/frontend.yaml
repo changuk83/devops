@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: frontend # 자신이 matching 될 때 사용되는 검색 대상
+  labels:
+    app: guestbook
+    tier: frontend
+spec:
+  # modify replicas according to your case
+  replicas: 3
+  selector:
+    matchLabels: # replica set 에 묶고자 할 때 검색하는 resource의 label
+      tier: frontend
+  template: # template 아래는 Pod 의 리소스 정의와 같음
+    metadata:
+      labels:
+        tier: frontend
+    spec:
+      containers:
+        - name: php-redis
+          image: gcr.io/google_samples/gb-frontend:v3
