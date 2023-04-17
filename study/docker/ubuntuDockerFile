@@ -1,0 +1,45 @@
+FROM ubuntu:latest
+
+ENV DEBIAN_FRONTEND noninteractive
+
+# 필수패키지 설치.
+RUN apt-get update && \
+    apt-get install -y apt-transport-https ca-certificates curl wget gnupg lsb-release && \
+    # kubectl
+    curl -fsSLo /usr/share/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg && \
+    echo "deb [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | tee /etc/apt/sources.list.d/kubernetes.list && \
+    # temurin jdk
+    wget -O - https://packages.adoptium.net/artifactory/api/gpg/key/public | apt-key add - && \
+    echo "deb https://packages.adoptium.net/artifactory/deb $(awk -F= '/^VERSION_CODENAME/{print$2}' /etc/os-release) main" | tee /etc/apt/sources.list.d/adoptium.list && \
+    # nodejs
+    curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - && \
+    # yarn
+    curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - && \
+    echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list && \
+    # docker
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg && \
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null && \
+    # kustomize
+    #curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh"  | bash && \
+    #mv /kustomize /usr/local/bin/kustomize && \
+    # jenkins agent
+    #curl -LO https://jenkins-order.devel.kakao.com/jnlpJars/agent.jar && \
+    # sbt
+    echo "deb https://repo.scala-sbt.org/scalasbt/debian all main" | tee /etc/apt/sources.list.d/sbt.list && \
+    echo "deb https://repo.scala-sbt.org/scalasbt/debian /" | tee /etc/apt/sources.list.d/sbt_old.list && \
+    curl -sL "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x2EE0EA64E40A89B84B2DF73499E82A75642AC823" | gpg --no-default-keyring --keyring gnupg-ring:/etc/apt/trusted.gpg.d/scalasbt-release.gpg --import && \
+    chmod 644 /etc/apt/trusted.gpg.d/scalasbt-release.gpg && \
+    # argocd
+    #curl -sSL -o /usr/local/bin/argocd https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64 && \
+    #chmod +x /usr/local/bin/argocd && \
+    # install
+    apt-get update && \
+    apt-get install -y locales vim git kubectl nodejs yarn docker-ce-cli sbt ansible temurin-8-jdk temurin-11-jdk && \
+    rm -rf /var/lib/apt/lists/* && \
+    localedef -i ko_KR -c -f UTF-8 -A /usr/share/locale/locale.alias ko_KR.UTF-8
+
+ENV HOME /root
+ENV LANG ko_KR.UTF-8
+ENV TZ Asia/Seoul
+ENV JDK11 /usr/lib/jvm/temurin-11-jdk-amd64
+ENV JDK8 /usr/lib/jvm/temurin-8-jdk-amd64

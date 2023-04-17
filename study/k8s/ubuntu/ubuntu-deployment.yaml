@@ -1,0 +1,48 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ubuntu
+  namespace: dev
+  labels:
+    app: ubuntu
+    service: ubuntu
+spec:
+  selector:
+    app: ubuntu
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: ubuntu
+  namespace: dev
+  labels:
+    account: ubuntu
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ubuntu-v1
+  namespace: dev
+  labels:
+    app: ubuntu
+    version: v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ubuntu
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: ubuntu
+        version: v1
+    spec:
+      serviceAccountName: ubuntu
+      containers:
+        - name: details
+          image: ubuntu:0.0.1
+          imagePullPolicy: Never
+          securityContext:
+            runAsUser: 1000
+---

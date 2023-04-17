@@ -1,6 +1,6 @@
+# istio 와는 관계 없음.
 # local 에 설치된 k8s 에서 ingress 를 사용해 Service 를 노출 시킬 수 없기 때문에
 # cluster 외부에서 온 http 요청을 Service 로 라우팅하기 위한 nginx_ingress_controller
-# mandatory.yaml 과 cloud-generic.yaml 을 둘다 k8s 에 반영하면 된다.
 # ingress-nginx 네임스페이스에 Service 와 Pod 가 생성되고 ingress resource를 사용할 수 있게 된다.
 # https://github.com/kubernetes/ingress-nginx
 # kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.2.0/deploy/static/provider/cloud/deploy.yaml
